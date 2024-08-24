@@ -22,6 +22,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
-  }
+    },
+"extra": {
+      "GOOGLE_MAPS_APIKEY": "AIzaSyBTkA0w4OOz3tWOuaEYG6_0buHVq1QXf4Y"
+    }  }
 }
