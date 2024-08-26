@@ -6,20 +6,23 @@ import MapViewComponent from '../components/MapViewComponent';
 import SearchBar from '../components/SearchBar';
 import BottomSheetComponent from '../components/BottomSheetComponent';
 
-export default function HomeScreen ({ navigation }) {
+export default function HomeScreen({ navigation }) {
   const { location, errorMsg } = useLocation();
   const [destination, setDestination] = useState(null);
   const [route, setRoute] = useState([]);
+  const [places, setPlaces] = useState([]);
   const bottomSheetRef = useRef(null);
 
   if (errorMsg) {
     Alert.alert('Error', errorMsg);
   }
 
-  usePlaces(location?.latitude, location?.longitude);
+  usePlaces(location?.latitude, location?.longitude, (newPlaces) => {
+    setPlaces((prevPlaces) => [...prevPlaces, ...newPlaces]);
+  });
 
   if (!location) {
-    return <View><Text>Loading location...</Text></View>; // Mostrar un mensaje mientras se carga la ubicación
+    return <View><Text>Loading location...</Text></View>;
   }
 
   const handleSearchPress = (data, details) => {
@@ -38,11 +41,13 @@ export default function HomeScreen ({ navigation }) {
           location={location}
           destination={destination}
           route={route}
+          setRoute={setRoute} // Ensure to pass setRoute as a prop
+          places={places} // Pass places to MapViewComponent
           onMarkerPress={handleMarkerPress}
         />
       )}
       <SearchBar onPress={handleSearchPress} />
-      <BottomSheetComponent ref={bottomSheetRef} />
+      <BottomSheetComponent places={places} ref={bottomSheetRef} />
     </View>
   );
-};
+}

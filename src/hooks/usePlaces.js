@@ -1,45 +1,27 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback } from 'react';
 import axios from 'axios';
-import usePlacesStore from '../context/PlacesContext';
 
-// Define the types of places you're interested in
 const TOURIST_ATTRACTIONS_TYPES = 'amusement_park|park|tourist_attraction|natural_feature|museum|monument';
 const OTHER_PLACES_TYPES = 'restaurant|lodging|motel';
 
-const usePlaces = (latitude, longitude) => {
-  const { addPlaces, getPlaces } = usePlacesStore(state => ({
-    addPlaces: state.addPlaces,
-    getPlaces: state.getPlaces,
-  }));
-
-  const [visitedPlaceIds, setVisitedPlaceIds] = useState(new Set());
-
+const usePlaces = (latitude, longitude, onUpdatePlaces) => {
   const fetchPlaces = useCallback(async (type) => {
     try {
-      const response = await axios.get('https://vltdnxfz-5000.brs.devtunnels.ms/places', {
+      const response = await axios.get('https://vltdnxfz-8000.brs.devtunnels.ms/places', {
         params: {
           latitude: latitude,
           longitude: longitude,
           type: type,
         }
       });
-      console.log('Fetched Places:', response.data);
       
-      const newPlaces = response.data.filter(place => {
-        if (visitedPlaceIds.has(place.place_id)) {
-          return false;
-        }
-        visitedPlaceIds.add(place.place_id);
-        return true;
-      });
-  
-      if (newPlaces.length > 0) {
-        addPlaces(newPlaces);
+      if (response.data.length > 0) {
+        onUpdatePlaces(response.data); // Call the provided callback with fetched places
       }
     } catch (error) {
       console.error('Error fetching places:', error);
     }
-  }, [latitude, longitude, addPlaces, visitedPlaceIds]);
+  }, [latitude, longitude, onUpdatePlaces]);
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -47,22 +29,15 @@ const usePlaces = (latitude, longitude) => {
       fetchPlaces(OTHER_PLACES_TYPES);
     }
 
-    // Optional: Limit the interval to prevent excessive requests
     const intervalId = setInterval(() => {
       if (latitude && longitude) {
         fetchPlaces(TOURIST_ATTRACTIONS_TYPES);
         fetchPlaces(OTHER_PLACES_TYPES);
       }
-    }, 30000); // Every minute, adjust as needed
+    }, 3000000); // Adjust as necessary
 
     return () => clearInterval(intervalId);
   }, [latitude, longitude, fetchPlaces]);
-
-  useEffect(() => {
-    const existingPlaces = getPlaces();
-    const existingPlaceIds = new Set(existingPlaces.map(place => place.place_id));
-    setVisitedPlaceIds(existingPlaceIds);
-  }, [getPlaces]);
 };
 
 export default usePlaces;

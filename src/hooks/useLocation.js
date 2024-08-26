@@ -13,8 +13,8 @@ const useLocation = () => {
         return;
       }
 
-      const location = await Location.getCurrentPositionAsync({});
-      setLocation(location.coords);
+      const { coords } = await Location.getCurrentPositionAsync({});
+      setLocation(coords);
     })();
   }, []);
 

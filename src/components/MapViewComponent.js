@@ -2,12 +2,9 @@ import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import usePlacesStore from '../context/PlacesContext';
 import { GOOGLE_MAPS_APIKEY } from '../config';
 
-const MapViewComponent = ({ location, destination, route, onMarkerPress }) => {
-  const places = usePlacesStore(state => state.places);
-  
+const MapViewComponent = ({ location, destination, route, setRoute, onMarkerPress, places }) => {
   return (
     <MapView
       style={styles.map}
@@ -19,7 +16,7 @@ const MapViewComponent = ({ location, destination, route, onMarkerPress }) => {
       }}
     >
       <Marker coordinate={{ latitude: location.latitude, longitude: location.longitude }} title="You are here" />
-      
+
       {destination && (
         <>
           <Marker coordinate={destination} title="Destination" />
@@ -35,7 +32,7 @@ const MapViewComponent = ({ location, destination, route, onMarkerPress }) => {
           />
         </>
       )}
-      
+
       {route.length > 0 && (
         <Polyline
           coordinates={route}
@@ -46,13 +43,13 @@ const MapViewComponent = ({ location, destination, route, onMarkerPress }) => {
 
       {places.map((place, index) => (
         <Marker
-          key={`${place.place_id}-${index}`}
+          key={`${place.id}-${index}`} // Change here: place.place_id to place.id
           coordinate={{
-            latitude: place.geometry.location.lat,
-            longitude: place.geometry.location.lng,
+            latitude: place.latitude,
+            longitude: place.longitude,
           }}
           title={place.name}
-          description={`${place.vicinity}\nPuntuación: ${place.rating || 'N/A'}`}
+          description={`${place.address}\nPuntuación: ${place.rating || 'N/A'}`}
           icon={{ uri: place.icon }}
           onPress={() => onMarkerPress(place)}
         />

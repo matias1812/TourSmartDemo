@@ -1,13 +1,32 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+
+// Mapa de place_type a íconos de FontAwesome
+const iconMap = {
+  restaurant: 'cutlery',
+  cafe: 'coffee',
+  amusement_park: 'rocket',
+  lodging: 'bed',
+  spa: 'spa',
+  bar: 'beer',
+  night_club: 'moon',
+};
 
 const PlaceItem = ({ place }) => {
+  const iconName = iconMap[place.place_type] || 'question'; // Usa un ícono por defecto si no se encuentra el place_type
+
   return (
     <View style={styles.container}>
-      <Image source={{ uri: place.icon }} style={styles.icon} />
+      <FontAwesome
+        name={iconName}
+        size={40}
+        color="#000"
+        style={styles.icon}
+      />
       <View style={styles.textContainer}>
         <Text style={styles.name}>{place.name}</Text>
-        <Text style={styles.address}>{place.vicinity}</Text>
+        <Text style={styles.vicinity}>{place.vicinity}</Text>
         <Text style={styles.rating}>Rating: {place.rating || 'N/A'}</Text>
       </View>
     </View>
@@ -23,8 +42,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
   },
   icon: {
-    width: 40,
-    height: 40,
     marginRight: 10,
   },
   textContainer: {
@@ -34,7 +51,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  address: {
+  vicinity: {
     color: '#555',
   },
   rating: {

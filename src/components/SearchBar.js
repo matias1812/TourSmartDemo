@@ -1,14 +1,15 @@
 import React from 'react';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { GOOGLE_MAPS_APIKEY } from '../config';
-import usePlacesStore from '../context/PlacesContext';
 
 const SearchBar = ({ onPress }) => {
-  const { addPlaces } = usePlacesStore(state => ({
-    addPlaces: state.addPlaces
-  }));
 
   const handlePress = (data, details) => {
+    if (!details || !details.geometry || !details.geometry.location) {
+      console.error('No location data available');
+      return;
+    }
+
     const { lat, lng } = details.geometry.location;
     const place = {
       place_id: data.place_id,
@@ -21,8 +22,7 @@ const SearchBar = ({ onPress }) => {
       rating: data.rating
     };
 
-    addPlaces([place]); // Añadir lugar seleccionado al estado
-    onPress(data, details); // Manejar la selección del lugar
+    onPress(place); // Handle place selection
   };
 
   return (
